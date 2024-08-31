@@ -8,8 +8,17 @@ from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
 from kivy.uix.scrollview import ScrollView
 
+from seconds import Seconds
+
+
 from instructions import txt_instruction, txt_test1, txt_test2, txt_test3, txt_sits
 from ruffier import test
+
+def check_int(str_num):
+    try:
+        return int(str_num)
+    except:
+        return False
 
 age = 24
 name = "Каміла"
@@ -46,14 +55,23 @@ class InstrScr(Screen):
         self.add_widget(outer)
 
     def next(self):
-        global name
         name = self.in_name.text
-        self.manager.current = 'pulse1'
+        age = check_int(self.in_age.text)
+        if age == False or age < 7:
+            age = 24
+            self.in_age.text = str(age)
+        else:
+            self.manager.current = 'pulse1'
 
 
 class PulseScr(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.next_screen = False
+
+        instr = Label(text="Порахуйте пульс")
+        self.lbl_sec = Seconds(15)
+        self.lbl_sec.bind(done=self.sec_finished)
 
         instr = Label(text=txt_test1)
 
