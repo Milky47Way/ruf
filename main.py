@@ -70,6 +70,7 @@ class PulseScr(Screen):
         self.next_screen = False
 
         instr = Label(text="Порахуйте пульс")
+        lbl1 = Label(text= "Порахуйте пульс")
         self.lbl_sec = Seconds(15)
         self.lbl_sec.bind(done=self.sec_finished)
 
@@ -87,14 +88,39 @@ class PulseScr(Screen):
 
         outer = BoxLayout(orientation='vertical', padding=8, spacing=8)
         outer.add_widget(instr)
+
+        outer.add_widget(lbl1)
+        outer.add_widget(self.lbl_sec)
+
         outer.add_widget(line)
         outer.add_widget(self.btn)
         self.add_widget(outer)
 
-    def next(self):
-        global p1
-        p1 = int(self.in_result.text)
-        self.manager.current = 'sits'
+    #def next(self):
+       # global p1
+
+        def sec_finished(self, *args):
+            self.next_screen = True
+            # можемо взаємодіяти
+            self.in_result.set_disabled(False)
+            self.btn.set_disabled(False)
+            self.btn.text = 'Продовжити'
+
+        def next(self):
+            if not self.next_screen:
+                # не можемо перейти на наступний екран
+                # тому деактивуємо кнопку
+                self.btn.set_disabled(True)
+                self.lbl_sec.start()
+            else:
+                global p1
+                # перевіряємо чи число
+                p1 = check_int(self.in_result.text)
+                if p1 == False or p1 <= 0:
+                    p1 = 0
+                    self.in_result.text = str(p1)
+                else:
+                    self.manager.current = 'sits'
 
 
 class CheckSits(Screen):
@@ -119,11 +145,17 @@ class CheckSits(Screen):
 class PulseScr2(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.next_screen = False
+        self.stage = 0
+
+
 
         instr = Label(text=txt_test3)
 
         line1 = BoxLayout(size_hint=(0.8, None), height='30sp')
-
+        self.lbl_sec= Seconds(15)
+        self.lbl_sec.bind(done=self.sec_finished)
+        lbl1 = Label(text="Порахуйте пульс")
 
         lbl_result1 = Label(text='Результат:', halign='right')
         self.in_result1 = TextInput(text='0', multiline=False)
